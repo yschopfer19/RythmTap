@@ -11,24 +11,26 @@ string checkTiming(Note& note, float NoteY, float hitzoneY, int lane_index)
 {   
     if (note.getlaneIndex() == lane_index)
     {   
+        if (note.getgotHit())
+        {
+            return "Miss!";
+        }
         float distance = abs(NoteY - hitzoneY); 
         if (distance < 10)
         {
-            cout << "Perfect!";
+            note.setgotHit(true);
             return "Perfect!";
         }
         else if (distance < 30)
         {
-            cout << "Good!";
+            note.setgotHit(true);
             return "Good!";
         }
         else
-        {
-            cout << "Miss!";
+        {    
             return "Miss!";
         } 
-    }
-    cout << "Miss!";
+   }
     return "Miss!";
 }
 
@@ -47,9 +49,11 @@ int main()
         Lane(650, 100, 100, 200, Color::White, Color::Yellow)
     };
 
-    Note note = Note(50, 100, 100, 20, Color::Red, 50, 0);
+    Note note = Note(50, 100, 100, 20, Color::Red, 50, 0, 1.0f);
 
     Clock clock;
+
+    float gameTime = 0.0f;
 
     while (window.isOpen())
     {
@@ -59,10 +63,10 @@ int main()
             {
                 switch (keyEvent->scancode)
                 {
-                    case Keyboard::Scancode::D: checkTiming(note, lanes[0].getHitzonePosition().y, note.getPosition().y, 0); break; 
-                    case Keyboard::Scancode::F: checkTiming(note, lanes[1].getHitzonePosition().y, note.getPosition().y, 1); break; 
-                    case Keyboard::Scancode::J: checkTiming(note, lanes[2].getHitzonePosition().y, note.getPosition().y, 2); break; 
-                    case Keyboard::Scancode::K: checkTiming(note, lanes[3].getHitzonePosition().y, note.getPosition().y, 3 ); break; 
+                    case Keyboard::Scancode::D: cout << checkTiming(note, lanes[0].getHitzonePosition().y, note.getPosition().y, 0); break; 
+                    case Keyboard::Scancode::F: cout << checkTiming(note, lanes[1].getHitzonePosition().y, note.getPosition().y, 1); break; 
+                    case Keyboard::Scancode::J: cout << checkTiming(note, lanes[2].getHitzonePosition().y, note.getPosition().y, 2); break; 
+                    case Keyboard::Scancode::K: cout << checkTiming(note, lanes[3].getHitzonePosition().y, note.getPosition().y, 3 ); break; 
                 }
             }
 
@@ -72,6 +76,8 @@ int main()
         
         Time time = clock.restart();
         float deltatime = time.asSeconds();
+        
+        gameTime += deltatime;
 
         window.clear(Color::Black);
         
@@ -79,8 +85,23 @@ int main()
             lane.draw(window);
         }
 
-        note.update(deltatime);
-        note.draw(window);
+        if (!note.getspawned() && gameTime >= note.getSpawnTime())
+        {
+            note.setspawned(true);
+        }
+
+        if (note.getspawned()) 
+        {
+            note.update(deltatime);
+            note.draw(window);
+        }
+
+        if (note.getgotHit())
+        {
+            note.setspawned(false);
+        } 
+
+        
         //cout << note.getPosition().y << endl;
         
         window.display();
