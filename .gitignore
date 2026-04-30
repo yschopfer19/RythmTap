@@ -3,6 +3,8 @@
 
 *.dll
 
+*.ogg
+
 .vscode/
 # Prerequisites
 *.d

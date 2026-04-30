@@ -10,7 +10,8 @@ enum class NoteState
     WAITING,
     ACTIVE,
     HIT,
-    MISS
+    MISS,
+    HELD
 };
 
 class Note
@@ -18,9 +19,11 @@ class Note
 public:
     Note(float x, float y, float width, float height, sf::Color color, int speed, int lane_Index, float spawn_time);
 
-    void draw(RenderWindow &window) const;
+    virtual ~Note() = default;
 
-    void update(float deltatime);
+    virtual void draw(RenderWindow &window) const;
+
+    virtual void update(float deltatime);
 
     Vector2f getPosition() const;
     int getlaneIndex() const;
@@ -30,13 +33,11 @@ public:
     NoteState getState() const;
     void setState(NoteState state);
 
-private:
+protected:
     RectangleShape shape;
     Vector2f position;
     int speed;
     int lane_Index;
-    bool got_Hit = false;
     float spawn_time;
-    bool spawned = false;
     NoteState state = NoteState::WAITING;
 };
