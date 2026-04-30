@@ -22,7 +22,7 @@ string checkTimingPress(float hitzoneY, int lane_index, vector<unique_ptr<Note>>
                 float distance = abs((holdNote->getPosition().y + holdNote->getNoteLength()) - hitzoneY);
                 if (distance < 30)
                 {
-                    holdNote->setState(NoteState::HELD);
+                    holdNote->startHold(hitzoneY);
                     return "Hold!";
                 }
             }

@@ -10,10 +10,11 @@ class HoldNote : public Note
 {
 public:
     HoldNote(float x, float y, float width, float height, Color color, int speed, int lane_Index, float spawn_time, float note_length);
+    void startHold(float hitzoneY);
     void update(float deltatime) override;
     float getNoteLength() const;
 
 private:
-    bool isBeingHeld;
     float note_length;
+    float hold_end_y;
 };

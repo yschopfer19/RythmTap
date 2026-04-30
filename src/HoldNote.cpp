@@ -7,17 +7,36 @@ using namespace std;
 using namespace sf;
 
 HoldNote::HoldNote(float x, float y, float width, float height, Color color, int speed, int lane_Index, float spawn_time, float note_length)
-    : Note(x, y, width, height, color, speed, lane_Index, spawn_time), note_length(note_length), isBeingHeld(false)
+    : Note(x, y, width, height, color, speed, lane_Index, spawn_time), note_length(note_length), hold_end_y(0.0f)
 {
     shape.setSize({width, note_length});
 }
 
+void HoldNote::startHold(float hitzoneY)
+{
+    setState(NoteState::HELD);
+    hold_end_y = position.y + note_length;
+    shape.setPosition(position);
+}
+
 void HoldNote::update(float deltatime)
 {
-    Note::update(deltatime);
-
-    if (this->state == NoteState::HELD)
+    if (state == NoteState::HELD)
     {
+        note_length -= speed * deltatime;
+        if (note_length <= 0.0f)
+        {
+            note_length = 0.0f;
+            setState(NoteState::HIT);
+        }
+
+        position.y = hold_end_y - note_length;
+        shape.setSize({shape.getSize().x, note_length});
+        shape.setPosition(position);
+    }
+    else
+    {
+        Note::update(deltatime);
     }
 }
 
