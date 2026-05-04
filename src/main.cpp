@@ -6,70 +6,11 @@
 #include "Lane.h"
 #include "Note.h"
 #include "HoldNote.h"
+#include "JudgementSystem.h"
 
 using namespace std;
 using namespace sf;
 
-string checkTimingPress(float hitzoneY, int lane_index, vector<unique_ptr<Note>> &notes)
-{
-    for (unique_ptr<Note> &note : notes)
-    {
-        if (note->getlaneIndex() == lane_index)
-        {
-            HoldNote *holdNote = dynamic_cast<HoldNote *>(note.get());
-            if (holdNote != nullptr && holdNote->getState() == NoteState::ACTIVE)
-            {
-                float distance = abs((holdNote->getPosition().y + holdNote->getNoteLength()) - hitzoneY);
-                if (distance < 30)
-                {
-                    holdNote->startHold(hitzoneY);
-                    return "Hold!";
-                }
-            }
-            else if (note->getState() == NoteState::ACTIVE)
-            {
-                float distance = abs(note->getPosition().y - hitzoneY);
-                if (distance < 10)
-                {
-                    note->setState(NoteState::HIT);
-                    return "Perfect!";
-                }
-                else if (distance < 30)
-                {
-                    note->setState(NoteState::HIT);
-                    return "Good!";
-                }
-            }
-        }
-    }
-    return "Miss!";
-}
-
-string checkTimingRelease(float hitzoneY, int lane_index, vector<unique_ptr<Note>> &notes)
-{
-    for (unique_ptr<Note> &note : notes)
-    {
-        if (note->getlaneIndex() == lane_index)
-        {
-            HoldNote *holdNote = dynamic_cast<HoldNote *>(note.get());
-            if (holdNote != nullptr && holdNote->getState() == NoteState::HELD)
-            {
-                float distance = abs(holdNote->getPosition().y - hitzoneY);
-                if (distance < 30)
-                {
-                    holdNote->setState(NoteState::HIT);
-                    return "Perfect!";
-                }
-                else
-                {
-                    holdNote->setState(NoteState::MISS);
-                    return "Miss!";
-                }
-            }
-        }
-    }
-    return "";
-}
 
 int main()
 {
@@ -86,12 +27,13 @@ int main()
         Lane(650, 100, 100, 200, Color::White, Color::Yellow)};
 
     vector<unique_ptr<Note>> notes;
-    notes.push_back(make_unique<Note>(50, 100, 100, 20, Color::Red, 50, 0, 1.0f));
-    notes.push_back(make_unique<Note>(50, 100, 100, 20, Color::Red, 50, 0, 2.0f));
-    notes.push_back(make_unique<Note>(250, 100, 100, 20, Color::Red, 50, 1, 5.0f));
-    notes.push_back(make_unique<HoldNote>(50, 100, 100, 20, Color::Red, 50, 0, 6.5f, 80));
-    notes.push_back(make_unique<Note>(650, 100, 100, 20, Color::Blue, 50, 3, 8.0f));
-    notes.push_back(make_unique<Note>(450, 100, 100, 20, Color::Blue, 50, 2, 8.0f));
+    notes.push_back(make_unique<Note>(50, 100, Color::Red, 50, 0, 1.0f));
+    notes.push_back(make_unique<Note>(50, 100, Color::Red, 50, 0, 2.0f));
+    notes.push_back(make_unique<Note>(250, 100, Color::Red, 50, 1, 5.0f));
+    notes.push_back(make_unique<HoldNote>(50, 100, Color::Red, 50, 0, 6.5f, 80));
+    notes.push_back(make_unique<Note>(650, 100, Color::Blue, 50, 3, 8.0f));
+    notes.push_back(make_unique<Note>(450, 100, Color::Blue, 50, 2, 8.0f));
+    notes.push_back(make_unique<HoldNote>(450, 100, Color::Blue, 50, 2, 10.0f, 70));
 
     Clock clock;
 
@@ -114,16 +56,16 @@ int main()
                 switch (keyEvent->scancode)
                 {
                 case Keyboard::Scancode::D:
-                    cout << checkTimingPress(lanes[0].getHitzonePosition().y, 0, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluate(lanes[0].getHitzonePosition().y, 0, notes));
                     break;
                 case Keyboard::Scancode::F:
-                    cout << checkTimingPress(lanes[1].getHitzonePosition().y, 1, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluate(lanes[1].getHitzonePosition().y, 1, notes));
                     break;
                 case Keyboard::Scancode::J:
-                    cout << checkTimingPress(lanes[2].getHitzonePosition().y, 2, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluate(lanes[2].getHitzonePosition().y, 2, notes));
                     break;
                 case Keyboard::Scancode::K:
-                    cout << checkTimingPress(lanes[3].getHitzonePosition().y, 3, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluate(lanes[3].getHitzonePosition().y, 3, notes));
                     break;
                 }
             }
@@ -132,16 +74,16 @@ int main()
                 switch (keyEvent->scancode)
                 {
                 case Keyboard::Scancode::D:
-                    cout << checkTimingRelease(lanes[0].getHitzonePosition().y, 0, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluateRelease(lanes[0].getHitzonePosition().y, 0, notes));
                     break;
                 case Keyboard::Scancode::F:
-                    cout << checkTimingRelease(lanes[1].getHitzonePosition().y, 1, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluateRelease(lanes[1].getHitzonePosition().y, 1, notes));
                     break;
                 case Keyboard::Scancode::J:
-                    cout << checkTimingRelease(lanes[2].getHitzonePosition().y, 2, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluateRelease(lanes[2].getHitzonePosition().y, 2, notes));
                     break;
                 case Keyboard::Scancode::K:
-                    cout << checkTimingRelease(lanes[3].getHitzonePosition().y, 3, notes);
+                    cout << JudgementSystem::judgementToString(JudgementSystem::evaluateRelease(lanes[3].getHitzonePosition().y, 3, notes));
                     break;
                 }
             }

@@ -9,7 +9,7 @@ using namespace sf;
 class HoldNote : public Note
 {
 public:
-    HoldNote(float x, float y, float width, float height, Color color, int speed, int lane_Index, float spawn_time, float note_length);
+    HoldNote(float x, float y, Color color, int speed, int lane_Index, float spawn_time, float note_length);
     void startHold(float hitzoneY);
     void update(float deltatime) override;
     float getNoteLength() const;

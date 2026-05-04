@@ -17,7 +17,7 @@ enum class NoteState
 class Note
 {
 public:
-    Note(float x, float y, float width, float height, sf::Color color, int speed, int lane_Index, float spawn_time);
+    Note(float x, float y, sf::Color color, int speed, int lane_Index, float spawn_time);
 
     virtual ~Note() = default;
 

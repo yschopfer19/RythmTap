@@ -6,10 +6,10 @@
 using namespace std;
 using namespace sf;
 
-HoldNote::HoldNote(float x, float y, float width, float height, Color color, int speed, int lane_Index, float spawn_time, float note_length)
-    : Note(x, y, width, height, color, speed, lane_Index, spawn_time), note_length(note_length), hold_end_y(0.0f)
+HoldNote::HoldNote(float x, float y, Color color, int speed, int lane_Index, float spawn_time, float note_length)
+    : Note(x, y, color, speed, lane_Index, spawn_time), note_length(note_length), hold_end_y(0.0f)
 {
-    shape.setSize({width, note_length});
+    shape.setSize({100, note_length});
 }
 
 void HoldNote::startHold(float hitzoneY)

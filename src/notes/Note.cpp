@@ -6,11 +6,11 @@
 using namespace std;
 using namespace sf;
 
-Note::Note(float x, float y, float width, float height, Color color, int speed, int lane_Index, float spawn_time)
+Note::Note(float x, float y, Color color, int speed, int lane_Index, float spawn_time)
     : position(x, y), speed(speed), lane_Index(lane_Index), spawn_time(spawn_time)
 {
     shape.setPosition({x, y});
-    shape.setSize({width, height});
+    shape.setSize({100, 20});
     shape.setFillColor(color);
 }
 
