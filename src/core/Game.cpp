@@ -16,13 +16,15 @@ Game::Game()
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
-    if (!audioSystem.load("C:/Users/yanni/Desktop/RhythmTap/assets/music/fassounds-escape-your-love-upbeat-fashion-pop-dance-412230.ogg"))
+
+    Chart testChart = ChartLoader::createTestChart();
+    loadChart(testChart);
+
+    if (!audioSystem.load(testChart.musicPath))
     {
         cout << "Fehler beim Laden der Musik!" << endl;
     }
 
-    Chart testChart = ChartLoader::createTestChart();
-    loadChart(testChart);
 
     audioSystem.play();
 }

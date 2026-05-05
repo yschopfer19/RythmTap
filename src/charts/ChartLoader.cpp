@@ -5,7 +5,7 @@ Chart ChartLoader::createTestChart()
 {
     Chart chart;
 
-    chart.musicPath = "C:/Users/yanni/Desktop/RhythmTap/assets/music/fassounds-escape-your-love-upbeat-fashion-pop-dance-412230.ogg";
+    chart.musicPath = "C:/Users/yanni/Desktop/RhythmProject/assets/music/fassounds-escape-your-love-upbeat-fashion-pop-dance-412230.ogg";
 
     // Notes manuell mit unterschiedlichen Zeitpunkten und Lanes
     // Format: { Zeit (Sekunden), Lane (0-3), Dauer (0 = Normal Note) }
