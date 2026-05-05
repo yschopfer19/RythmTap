@@ -10,7 +10,7 @@ Note::Note(float x, float y, Color color, int speed, int lane_Index, float spawn
     : position(x, y), speed(speed), lane_Index(lane_Index), spawn_time(spawn_time)
 {
     shape.setPosition({x, y});
-    shape.setSize({100, 20});
+    shape.setSize({130, 20});
     shape.setFillColor(color);
 }
 
@@ -19,9 +19,14 @@ void Note::draw(RenderWindow &window) const
     window.draw(shape);
 }
 
-void Note::update(float deltatime)
+void Note::update(float songtime)
 {
-    position.y += speed * deltatime;
+    if (songtime < spawn_time)
+        return;
+
+    float timeSinceSpawn = songtime - spawn_time;
+    position.y = -50.0f + speed * timeSinceSpawn;
+
     shape.setPosition(position);
 }
 

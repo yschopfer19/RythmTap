@@ -1,27 +1,35 @@
-#include <iostream>
-#include <SFML/Graphics.hpp>
+#pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+#include "Types.h"
+#include "InputTypes.h"
 #include "Note.h"
-#include "HoldNote.h"
-
-using namespace std;
-using namespace sf;
 
 enum class Judgement
 {
     PERFECT,
     GOOD,
     MISS,
-    HOLD, 
-    RELEASE
+    HOLD,
+    RELEASE,
+    NONE
 };
 
 class JudgementSystem
 {
-    public:
-    static Judgement evaluate(float hitzoneY, int lane_index, vector<unique_ptr<Note>> &notes);
-    static Judgement  evaluateRelease(float hitzoneY, int lane_index, vector<unique_ptr<Note>> &notes);
-    static string judgementToString(Judgement judgement);
+public:
+    Judgement evaluatePress(
+        LaneIndex lane,
+        float hitzoneY,
+        const std::vector<std::unique_ptr<Note>> &notes,
+        Seconds time);
 
+    Judgement evaluateRelease(
+        LaneIndex lane,
+        float hitzoneY,
+        const std::vector<std::unique_ptr<Note>> &notes);
+
+    static std::string judgementToString(Judgement judgement);
 };
-
