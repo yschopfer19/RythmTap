@@ -23,13 +23,10 @@ public:
     Judgement evaluatePress(
         LaneIndex lane,
         float hitzoneY,
-        const std::vector<std::unique_ptr<Note>> &notes,
-        Seconds time);
+        const vector<unique_ptr<Note>> &notes,
+        float songtime); 
 
-    Judgement evaluateRelease(
-        LaneIndex lane,
-        float hitzoneY,
-        const std::vector<std::unique_ptr<Note>> &notes);
+    Judgement evaluateRelease(LaneIndex lane, float hitzoneY, vector<unique_ptr<Note>> &notes);
 
     static std::string judgementToString(Judgement judgement);
 };

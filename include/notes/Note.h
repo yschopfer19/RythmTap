@@ -11,7 +11,9 @@ enum class NoteState
     ACTIVE,
     HIT,
     MISS,
-    HELD
+    HELD,
+    RELEASED,
+    BROKEN
 };
 
 class Note

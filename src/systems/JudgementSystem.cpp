@@ -6,6 +6,7 @@
 
 #include "JudgementSystem.h"
 #include "Types.h"
+#include "HoldNote.h"
 
 using namespace std;
 using namespace sf;
@@ -14,7 +15,7 @@ Judgement JudgementSystem::evaluatePress(
     LaneIndex lane,
     float hitzoneY,
     const vector<unique_ptr<Note>> &notes,
-    Seconds time)
+    float songtime)  // ← Seconds → float
 {
     for (const auto &note : notes)
     {
@@ -24,8 +25,17 @@ Judgement JudgementSystem::evaluatePress(
         if (note->getState() != NoteState::ACTIVE)
             continue;
 
-        float distance = abs(note->getPosition().y - hitzoneY);
+        // Prüfe ob HoldNote
+        HoldNote* holdNote = dynamic_cast<HoldNote*>(note.get());
+        if (holdNote != nullptr)
+        {
+            Judgement result = Judgement::MISS;
+            holdNote->onPress(hitzoneY, result);
+            return result;
+        }
 
+        // Normale Note
+        float distance = abs(note->getPosition().y - hitzoneY);
         if (distance < 22.0f)
         {
             note->setState(NoteState::HIT);
@@ -41,31 +51,21 @@ Judgement JudgementSystem::evaluatePress(
     return Judgement::MISS;
 }
 
-Judgement JudgementSystem::evaluateRelease(
-    LaneIndex lane,
-    float hitzoneY,
-    const vector<unique_ptr<Note>> &notes)
+Judgement JudgementSystem::evaluateRelease(LaneIndex lane, float hitzoneY, vector<unique_ptr<Note>>& notes)
 {
     for (const auto &note : notes)
     {
-        if (note->getlaneIndex() != lane.value)
-            continue;
+        if (note->getlaneIndex() != lane.value) continue;
+        if (note->getState() != NoteState::HELD) continue;
 
-        if (note->getState() != NoteState::HELD)
-            continue;
-
-        float distance = abs(note->getPosition().y - hitzoneY);
-
-        if (distance < 30.0f)
+        HoldNote* holdNote = dynamic_cast<HoldNote*>(note.get());
+        if (holdNote != nullptr)
         {
-            note->setState(NoteState::HIT);
-            return Judgement::PERFECT;
+            Judgement result = Judgement::RELEASE;
+            holdNote->onRelease(hitzoneY, result);
+            return result;
         }
-
-        note->setState(NoteState::MISS);
-        return Judgement::MISS;
     }
-
     return Judgement::RELEASE;
 }
 

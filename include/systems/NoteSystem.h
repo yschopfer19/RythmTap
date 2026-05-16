@@ -16,7 +16,7 @@ class NoteSystem
 public:
     void addNote(unique_ptr<Note> note);
 
-    void update(Seconds time, const array<float, 4> &hitY);
+    void update(float songtime, const array<float, 4> &hitY);
 
     void draw(RenderWindow &window);
 

@@ -10,6 +10,7 @@
 #include "../charts/Chart.h"
 #include "Lane.h"
 #include "Types.h"
+#include "HoldNote.h"
 
 class Game
 {
@@ -26,7 +27,7 @@ private:
 private:
     sf::RenderWindow window;
 
-    float elapsedTime = 0.0f; // Verstrichene Zeit seit Start
+    float elapsedTime = 0.0f; 
 
     std::array<Lane, 4> lanes;
 

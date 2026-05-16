@@ -7,5 +7,5 @@ using namespace sf;
 
 void ScoreSystem::addJudgement(Judgement judgement)
 {
-    std::cout << JudgementSystem::judgementToString(judgement) << std::endl;
+    cout << JudgementSystem::judgementToString(judgement) << endl;
 }

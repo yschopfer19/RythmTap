@@ -16,7 +16,6 @@ Game::Game()
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
-
     Chart testChart = ChartLoader::createTestChart();
     loadChart(testChart);
 
@@ -24,7 +23,6 @@ Game::Game()
     {
         cout << "Fehler beim Laden der Musik!" << endl;
     }
-
 
     audioSystem.play();
 }
@@ -37,16 +35,32 @@ void Game::loadChart(const Chart &chart)
     {
         float hitTime = chartNote.time;
         float spawnTime = max(0.0f, hitTime - GameConfig::NOTE_TRAVEL_TIME);
+        if (chartNote.duration > 0.0f)
+        {
+            // HoldNote erstellen
+            auto note = make_unique<HoldNote>(
+                lanes[chartNote.lane].getHitzonePosition().x,
+                -50.0f - (chartNote.duration * GameConfig::NOTE_SPEED),
+                Color::White,
+                GameConfig::NOTE_SPEED,
+                chartNote.lane,
+                spawnTime,
+                chartNote.duration * GameConfig::NOTE_SPEED // duration in Pixel umrechnen
+            );
+            noteSystem.addNote(move(note));
+        }
+        else
+        {
+            auto note = make_unique<Note>(
+                lanes[chartNote.lane].getHitzonePosition().x,
+                -50.0f,
+                Color::White,
+                GameConfig::NOTE_SPEED,
+                chartNote.lane,
+                spawnTime);
 
-        auto note = make_unique<Note>(
-            lanes[chartNote.lane].getHitzonePosition().x,
-            -50.0f,
-            Color::White,
-            GameConfig::NOTE_SPEED,
-            chartNote.lane,
-            spawnTime);
-
-        noteSystem.addNote(move(note));
+            noteSystem.addNote(move(note));
+        }
     }
 }
 
@@ -80,13 +94,13 @@ void Game::processEvents()
 
 void Game::update()
 {
-    Seconds time = audioSystem.getSongTime();
+    Seconds songTime = audioSystem.getSongTime();
 
     array<float, 4> hitY;
     for (int i = 0; i < 4; i++)
         hitY[i] = lanes[i].getHitzonePosition().y;
 
-    noteSystem.update(time, hitY);
+    noteSystem.update(songTime.value, hitY);
 
     auto inputs = inputSystem.pollInputs();
 
@@ -99,7 +113,7 @@ void Game::update()
                 input.lane,
                 hitY[input.lane.value],
                 noteSystem.getNotes(),
-                time);
+                songTime.value);
         }
         else
         {

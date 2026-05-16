@@ -14,23 +14,26 @@ void NoteSystem::addNote(unique_ptr<Note> note)
     notes.push_back(move(note));
 }
 
-void NoteSystem::update(Seconds time, const array<float, 4> &hitY)
+void NoteSystem::update(float songtime, const array<float, 4> &hitY)
 {
     for (auto &note : notes)
     {
         if (note->getState() == NoteState::WAITING &&
-            time.value >= note->getSpawnTime())
+            songtime >= note->getSpawnTime())
         {
             note->setState(NoteState::ACTIVE);
         }
 
-        if (note->getState() == NoteState::ACTIVE)
+        if (note->getState() == NoteState::ACTIVE || 
+            note->getState() == NoteState::HELD || 
+            note->getState() == NoteState::RELEASED)
         {
-            note->update(time.value);
+            note->update(songtime);
 
             int lane = note->getlaneIndex();
 
-            if (note->getPosition().y > hitY[lane] + 30)
+            if (note->getState() == NoteState::ACTIVE && 
+                note->getPosition().y > hitY[lane] + 30)
             {
                 note->setState(NoteState::MISS);
             }
@@ -43,7 +46,8 @@ void NoteSystem::draw(sf::RenderWindow &window)
     for (auto &note : notes)
     {
         if (note->getState() == NoteState::ACTIVE ||
-            note->getState() == NoteState::HELD)
+            note->getState() == NoteState::HELD ||
+            note->getState() == NoteState::RELEASED)
         {
             note->draw(window);
         }
